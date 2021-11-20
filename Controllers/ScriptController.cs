@@ -22,40 +22,49 @@ public class ScriptController : ControllerBase
         secret = new Secret();
     }
     
-    [Route("Create/{index}/{id}")]
-    public async Task<string> Create(string index,string id)
+
+    [HttpGet("Create/{index}/{id}/{key}")]
+    public async Task<string> Create(string index,string id, string key, string? name = null)
     {      
-        string name = Request.Query["name"];
+        if(key != secret.KEY) {
+            return "Not authorized";
+        } else {
+            name = Request.Query["name"];
 
-        using (var _client = new HttpClient())
-        {
-
-            JObject jsonObject = new JObject
+            using (var _client = new HttpClient())
             {
-                [index] = new JObject
+
+                JObject jsonObject = new JObject
                 {
-                    ["Id"] = id,
-                    ["Name"] = name
-                }
-            };
+                    [index] = new JObject
+                    {
+                        ["Id"] = id,
+                        ["Name"] = name
+                    }
+                };
 
-            HttpContent content = new StringContent(jsonObject.ToString(), Encoding.UTF8, "application/json");
+                HttpContent content = new StringContent(jsonObject.ToString(), Encoding.UTF8, "application/json");
 
-            var result = await _client.PatchAsync(secret.SCRIPT_LIST+".json?auth=" + secret.API_KEY, content);
+                var result = await _client.PatchAsync(secret.SCRIPT_LIST+".json?auth=" + secret.API_KEY, content);
 
-           return await result.Content.ReadAsStringAsync();
+            return await result.Content.ReadAsStringAsync();
+            }
         }
     }
     
-    [Route("Delete/{index}")]
-    public async Task<string> Delete(string index)
-    {
 
-        using (var _client = new HttpClient())
-        {
-            var result = await _client.DeleteAsync(secret.SCRIPT_LIST +"/"+ index + ".json?auth=" + secret.API_KEY);
-            
-            return await result.Content.ReadAsStringAsync();
+    [HttpDelete("Delete/{index}/{key}")]
+    public async Task<string> Delete(string index, string key)
+    {
+        if(key != secret.KEY) {
+            return "Not authorized";
+        } else {
+            using (var _client = new HttpClient())
+            {
+                var result = await _client.DeleteAsync(secret.SCRIPT_LIST +"/"+ index + ".json?auth=" + secret.API_KEY);
+                
+                return await result.Content.ReadAsStringAsync();
+            }
         }
     }
     
