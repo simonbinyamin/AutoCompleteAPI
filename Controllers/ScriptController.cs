@@ -69,15 +69,28 @@ public class ScriptController : ControllerBase
     }
     
     [HttpGet]
-    [Route("List")]
-    public async Task<Item[]?> List()
+    [Route("List")]   
+    public async Task<ContentResult> List()
     {
+        Dictionary<int, Item> keyValuePairs = new Dictionary<int, Item>();
         string resultContent = "";
 
         HttpResponseMessage response = await client.GetAsync(secret.SCRIPT + ".json");
         resultContent = await response.Content.ReadAsStringAsync();
         var json = JObject.Parse(resultContent);
         var feat = json?["lst"] ?? "";
-        return feat.ToObject<Item[]>();
+
+
+        var index = 0;
+        foreach (dynamic entry in feat)
+        {
+            string id = entry.Id;
+            string name = entry.Name;
+            keyValuePairs.Add(index, new Item { Id = id, Name = name });
+            index++;
+        }
+
+        var jObject = JObject.FromObject(new { Payload = keyValuePairs });
+        return Content(jObject.ToString(), "application/json");
     }
 }
