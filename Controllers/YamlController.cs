@@ -12,11 +12,11 @@ namespace AutoCompleteAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ScriptController : ControllerBase
+public class YamlController : ControllerBase
 {
     private HttpClient client;
     private Secret secret;
-    public ScriptController()
+    public YamlController()
     {
         client = new HttpClient();
         secret = new Secret();
@@ -45,7 +45,7 @@ public class ScriptController : ControllerBase
 
                 HttpContent content = new StringContent(jsonObject.ToString(), Encoding.UTF8, "application/json");
 
-                var result = await _client.PatchAsync(secret.SCRIPT_LIST+".json?auth=" + secret.API_KEY, content);
+                var result = await _client.PatchAsync(secret.YAML_LIST+".json?auth=" + secret.API_KEY, content);
 
             return await result.Content.ReadAsStringAsync();
             }
@@ -61,7 +61,7 @@ public class ScriptController : ControllerBase
         } else {
             using (var _client = new HttpClient())
             {
-                var result = await _client.DeleteAsync(secret.SCRIPT_LIST +"/"+ index + ".json?auth=" + secret.API_KEY);
+                var result = await _client.DeleteAsync(secret.YAML_LIST +"/"+ index + ".json?auth=" + secret.API_KEY);
                 
                 return await result.Content.ReadAsStringAsync();
             }
@@ -75,7 +75,7 @@ public class ScriptController : ControllerBase
         Dictionary<int, Item> keyValuePairs = new Dictionary<int, Item>();
         string resultContent = "";
 
-        HttpResponseMessage response = await client.GetAsync(secret.SCRIPT + ".json");
+        HttpResponseMessage response = await client.GetAsync(secret.YAML + ".json");
         resultContent = await response.Content.ReadAsStringAsync();
         var json = JObject.Parse(resultContent);
         var feat = json?["lst"] ?? "";
