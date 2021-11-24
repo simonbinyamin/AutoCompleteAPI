@@ -11,12 +11,12 @@ using AutoCompleteAPI.Environment;
 namespace AutoCompleteAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class AutoController : ControllerBase
+[Route("Auto")]
+public class CsharpController : ControllerBase
 {
     private HttpClient client;
     private Secret secret;
-    public AutoController()
+    public CsharpController()
     {
         client = new HttpClient();
         secret = new Secret();
